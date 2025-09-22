@@ -1,0 +1,30 @@
+{% extends "account/base_account.html" %}
+{% load i18n form_extras %}
+{% block account_title %}Crear cuenta{% endblock %}
+{% block account_content %}
+  <form method="post" action="{% url 'account_signup' %}" class="space-y-3 max-w-md">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      <label class="block text-sm font-medium">Nombre</label>
+      {{ form.display_name }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Rol</label>
+      {{ form.role }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Correo</label>
+      {{ form.email }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Contraseña</label>
+      {{ form.password1 }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Repetir contraseña</label>
+      {{ form.password2 }}
+    </div>
+    <button type="submit" class="px-4 py-2 bg-brand-600 text-white rounded">Crear cuenta</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% block account_title %}{% endblock %} · UX Manager{% endblock %}
+{% block content %}
+  {% if form.errors %}
+    <div role="alert" class="mb-4 p-3 border-l-4 border-red-500 bg-red-50 text-red-800">
+      Favor ingresar información válida en los campos obligatorios
+    </div>
+    <ul class="mb-4 list-disc list-inside text-red-700">
+      {% for field in form %}
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if messages %}
+    <div class="mb-3 space-y-2">
+      {% for message in messages %}
+        <div role="status" class="p-2 rounded bg-accent-100 text-neutral-900">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% block account_content %}{% endblock %}
+{% endblock %}
