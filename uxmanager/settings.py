@@ -184,6 +184,10 @@ REST_FRAMEWORK = {
 # ──────────────────────────────────────────────────────────────────────────────
 IS_TESTING = "PYTEST_CURRENT_TEST" in os.environ
 REDIS_URL = env("REDIS_URL", default=None)
+
+# Chatbot / OpenAI
+OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+OPENAI_MODEL = env("OPENAI_MODEL", default="gpt-4o-mini")
 if (not IS_TESTING) and (not USE_SQLITE_FOR_TESTS) and REDIS_URL:
     CACHES = {
         "default": {

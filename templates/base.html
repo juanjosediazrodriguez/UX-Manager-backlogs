@@ -30,15 +30,22 @@
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <a href="/" class="text-brand-700 font-semibold text-lg">UX Manager</a>
         <nav aria-label="Principal" class="flex items-center gap-4">
-          <a href="/#destacados" class="text-sm text-neutral-700 hover:text-brand-600 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Ranking</a>
-          <a href="/#buscador" class="text-sm text-neutral-700 hover:text-brand-600 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Buscar</a>
+          {% if request.resolver_match and request.resolver_match.url_name != 'ranking' %}
+            <a href="{% url 'ranking' %}" class="text-sm text-neutral-700 hover:text-brand-600 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Ranking</a>
+          {% endif %}
+          {% if request.resolver_match and request.resolver_match.url_name != 'home' %}
+            <a href="/#buscador" class="text-sm text-neutral-700 hover:text-brand-600 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Buscar</a>
+          {% endif %}
+          {% if request.resolver_match and request.resolver_match.url_name != 'help' %}
+            <a href="{% url 'help' %}" class="text-sm text-neutral-700 hover:text-brand-600 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Ayuda</a>
+          {% endif %}
           {% if request.user.is_authenticated %}
             <form action="{% url 'account_logout' %}" method="post" class="inline">
               {% csrf_token %}
-              <button type="submit" class="text-sm text-brand-700 hover:text-brand-900 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Cerrar sesion</button>
+              <button type="submit" class="text-sm text-brand-700 hover:text-brand-900 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Cerrar sesión</button>
             </form>
           {% else %}
-            <a href="{% url 'account_login' %}" class="text-sm text-brand-700 hover:text-brand-900 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Iniciar sesion</a>
+            <a href="{% url 'account_login' %}" class="text-sm text-brand-700 hover:text-brand-900 focus:outline-none focus-visible:ring-2 ring-brand-500 rounded">Iniciar sesión</a>
           {% endif %}
         </nav>
       </div>

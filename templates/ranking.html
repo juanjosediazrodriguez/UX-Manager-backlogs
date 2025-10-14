@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Ranking - UX Manager{% endblock %}
+{% block content %}
+  <section aria-labelledby="ranking-heading" class="space-y-10">
+    <header class="space-y-3">
+      <h1 id="ranking-heading" class="text-3xl font-semibold text-brand-700">Ranking de empresas</h1>
+      <p class="text-neutral-700 max-w-3xl">
+        Explora el top 10 de empresas según la satisfacción promedio. Usa los filtros para alternar entre las mejor y peor evaluadas, o enfócate en una industria o ubicación específica.
+      </p>
+    </header>
+
+    <section aria-labelledby="filters-heading" class="space-y-6">
+      <div class="rounded-xl border bg-white p-6 shadow-sm space-y-6">
+        <header class="space-y-2">
+          <h2 id="filters-heading" class="text-xl font-semibold text-neutral-900">Filtrar resultados</h2>
+          <p class="text-sm text-neutral-600">Mostrando {{ ranked_companies|length }} empresas.</p>
+        </header>
+
+        <form method="get" class="grid gap-4 lg:grid-cols-[repeat(4,minmax(0,1fr))] lg:items-end">
+          <div class="space-y-2">
+            <label for="order" class="text-xs font-medium text-neutral-600 uppercase tracking-wide">Orden</label>
+            <select id="order" name="order" class="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+              <option value="best" {% if selected_order == "best" %}selected{% endif %}>Top 10 mejor evaluadas</option>
+              <option value="worst" {% if selected_order == "worst" %}selected{% endif %}>Top 10 peor evaluadas</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label for="industry" class="text-xs font-medium text-neutral-600 uppercase tracking-wide">Industria</label>
+            <select id="industry" name="industry" class="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+              <option value="">Todas las industrias</option>
+              {% for industry in all_industries %}
+                <option value="{{ industry }}" {% if industry == selected_industry %}selected{% endif %}>{{ industry }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label for="location" class="text-xs font-medium text-neutral-600 uppercase tracking-wide">Ubicación</label>
+            <select id="location" name="location" class="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+              <option value="">Todas las ubicaciones</option>
+              {% for location in all_locations %}
+                <option value="{{ location }}" {% if location == selected_location %}selected{% endif %}>{{ location }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="flex gap-3">
+            <button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-3 text-sm font-medium text-white shadow hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Aplicar filtros</button>
+            {% if selected_order != "best" or selected_industry or selected_location %}
+              <a href="{% url 'ranking' %}" class="inline-flex items-center justify-center rounded-lg border border-neutral-300 px-4 py-3 text-sm font-medium text-neutral-700 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Limpiar</a>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section aria-label="Resultados del ranking" class="space-y-4">
+      {% if ranked_companies %}
+        <div class="overflow-x-auto rounded-xl border bg-white shadow-sm">
+          <table class="min-w-full divide-y divide-neutral-200">
+            <thead class="bg-neutral-50">
+              <tr class="text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                <th scope="col" class="px-6 py-3">Posición</th>
+                <th scope="col" class="px-6 py-3">Empresa</th>
+                <th scope="col" class="px-6 py-3">Industria</th>
+                <th scope="col" class="px-6 py-3">Ubicación</th>
+                <th scope="col" class="px-6 py-3 text-right">Promedio</th>
+                <th scope="col" class="px-6 py-3 text-right">Reseñas</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-200 text-sm text-neutral-800">
+              {% for company in ranked_companies %}
+                <tr class="hover:bg-neutral-50">
+                  <td class="px-6 py-4 font-semibold text-brand-700">{{ forloop.counter }}</td>
+                  <td class="px-6 py-4">
+                    <div class="space-y-1">
+                      <a href="{% url 'calificaciones' company.slug %}" class="font-medium text-neutral-900 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded">{{ company.name }}</a>
+                      <p class="text-xs text-neutral-500">{{ company.summary_line }}</p>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">{{ company.industry }}</td>
+                  <td class="px-6 py-4">{{ company.location }}</td>
+                  <td class="px-6 py-4 text-right font-semibold text-brand-700">{{ company.calculated_avg_rating|floatformat:1 }} / 5</td>
+                  <td class="px-6 py-4 text-right text-neutral-600">{{ company.calculated_review_count }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="rounded-xl border-2 border-dashed border-neutral-300 bg-white p-8 text-center text-sm text-neutral-600">
+          <p>No hay resultados para los filtros seleccionados. Intenta ajustar la industria, la ubicación o el orden.</p>
+        </div>
+      {% endif %}
+    </section>
+  </section>
+{% endblock %}

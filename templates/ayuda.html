@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Ayuda - UX Manager{% endblock %}
+{% block content %}
+  <section class="space-y-8" aria-labelledby="help-heading">
+    <header class="space-y-3">
+      <h1 id="help-heading" class="text-3xl font-semibold text-brand-700">Centro de Ayuda</h1>
+      <p class="text-neutral-700 max-w-3xl">
+        Conversa con nuestro asistente y obtén respuestas sobre empresas, calificaciones y reseñas recopiladas.
+        El bot utiliza la misma información que ves en la plataforma para contextualizar cada respuesta.
+      </p>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+      <article class="space-y-4 rounded-xl border bg-white p-6 shadow-sm" aria-labelledby="chatbot-heading">
+        <div class="space-y-2">
+          <h2 id="chatbot-heading" class="text-xl font-semibold text-neutral-900">Asistente UX Manager</h2>
+          <p class="text-sm text-neutral-600">
+            Escribe una pregunta sobre una empresa, compara reseñas o solicita un resumen. El asistente contactará a la API de ChatGPT usando la información interna de la plataforma.
+          </p>
+        </div>
+        <div class="flex h-[28rem] flex-col gap-4 rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+          <div id="chat-log" class="flex-1 space-y-4 overflow-y-auto pr-2 text-sm text-neutral-700" role="log" aria-live="polite">
+            <div class="rounded-lg bg-white p-3 shadow-sm">
+              <p class="font-medium text-brand-700">Asistente</p>
+              <p class="mt-1 text-neutral-700">Hola, ¿sobre qué empresa o reseñas te gustaría saber más?</p>
+            </div>
+          </div>
+          <form id="chat-form" class="space-y-3" aria-label="Enviar mensaje al asistente">
+            {% csrf_token %}
+            <label for="chat-input" class="text-xs font-medium uppercase tracking-wide text-neutral-500">Tu mensaje</label>
+            <textarea id="chat-input" name="message" rows="3" class="w-full resize-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200" placeholder="Ej. ¿Cuál es la tendencia de satisfacción en Nimbus Works?" required></textarea>
+            <div class="flex items-center gap-3">
+              <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                Enviar
+              </button>
+              <span id="chat-status" class="text-xs text-neutral-500" role="status"></span>
+            </div>
+          </form>
+        </div>
+      </article>
+
+      <aside class="space-y-4 rounded-xl border bg-white p-6 shadow-sm" aria-labelledby="tips-heading">
+        <h2 id="tips-heading" class="text-lg font-semibold text-neutral-900">Recomendaciones de uso</h2>
+        <ul class="space-y-3 text-sm text-neutral-600">
+          <li class="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+            Estructura la pregunta indicando empresa, rango de fechas o filtro que necesites para que el asistente contextualice la respuesta.
+          </li>
+          <li class="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+            El bot puede resumir reseñas, comparar puntuaciones y sugerir próximos pasos basados en tendencias.
+          </li>
+          <li class="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+            Si necesitas exportar resultados, pide al asistente un listado en formato tabla para copiarlo fácilmente.
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+  <script>
+    (function () {
+      const chatForm = document.getElementById("chat-form");
+      const chatInput = document.getElementById("chat-input");
+      const chatLog = document.getElementById("chat-log");
+      const chatStatus = document.getElementById("chat-status");
+      const endpoint = "{% url 'chatbot_api' %}";
+
+      function appendMessage(author, text, variant) {
+        const container = document.createElement("div");
+        container.className = variant === "user"
+          ? "ml-auto w-fit max-w-full rounded-lg bg-brand-600 px-4 py-3 text-sm text-white shadow"
+          : "rounded-lg bg-white p-3 text-sm text-neutral-700 shadow-sm";
+
+        const heading = document.createElement("p");
+        heading.className = variant === "user" ? "font-medium" : "font-medium text-brand-700";
+        heading.textContent = author;
+        container.appendChild(heading);
+
+        const body = document.createElement("p");
+        body.className = variant === "user" ? "mt-1 text-sm text-white/90" : "mt-1 text-sm text-neutral-700";
+        body.textContent = text;
+        container.appendChild(body);
+
+        chatLog.appendChild(container);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
+      function getCsrfToken() {
+        const match = document.cookie.match(/csrftoken=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : "";
+      }
+
+      async function sendMessage(message) {
+        chatStatus.textContent = "Consultando al asistente...";
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCsrfToken(),
+            },
+            body: JSON.stringify({ message }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || "No pudimos obtener una respuesta.");
+          }
+
+          appendMessage("Asistente", data.reply, "assistant");
+        } catch (error) {
+          appendMessage("Asistente", error.message, "assistant");
+        } finally {
+          chatStatus.textContent = "";
+        }
+      }
+
+      chatForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const message = chatInput.value.trim();
+        if (!message) {
+          return;
+        }
+        appendMessage("Tú", message, "user");
+        chatInput.value = "";
+        sendMessage(message);
+      });
+    })();
+  </script>
+{% endblock %}

@@ -4,7 +4,7 @@
   <section aria-labelledby="home-overview" class="space-y-10">
     <header class="space-y-3">
       <h1 id="home-overview" class="text-3xl font-semibold text-brand-700">Gestiona la experiencia del equipo</h1>
-      <p class="text-neutral-700 max-w-3xl">Centraliza las resenas de candidatos y colaboradores, detecta tendencias a simple vista y prepara tu siguiente iteracion con datos claros. Empieza buscando una empresa y revisa su pulso de satisfaccion.</p>
+      <p class="text-neutral-700 max-w-3xl">Centraliza las reseñas de candidatos y colaboradores, detecta tendencias a simple vista y prepara tu siguiente iteración con datos claros. Empieza buscando una empresa y revisa su pulso de satisfacción.</p>
     </header>
 
     <section id="buscador" aria-labelledby="search-heading" class="space-y-6">
@@ -12,7 +12,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 id="search-heading" class="text-xl font-semibold text-neutral-900">Busca una empresa</h2>
-            <p class="text-sm text-neutral-600">Explora {{ total_companies }} perfiles con datos sinteticos de experiencia y talento.</p>
+            <p class="text-sm text-neutral-600">Explora {{ total_companies }} perfiles con datos sintéticos de experiencia y talento.</p>
           </div>
         </div>
         <form method="get" class="flex flex-col gap-4 lg:flex-row lg:items-center">
@@ -51,15 +51,15 @@
             </div>
           {% else %}
             <div class="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-6 text-sm text-neutral-600">
-              <p>No encontramos coincidencias para "{{ query }}". Intenta con otro nombre, sector o ubicacion.</p>
+              <p>No encontramos coincidencias para "{{ query }}". Intenta con otro nombre, sector o ubicación.</p>
             </div>
           {% endif %}
         {% else %}
-          <p class="text-sm text-neutral-600">Escribe el nombre, la industria o la ubicacion para ver resultados personalizados.</p>
+          <p class="text-sm text-neutral-600">Escribe el nombre, la industria o la ubicación para ver resultados personalizados.</p>
         {% endif %}
 
         <div id="destacados" class="space-y-3" aria-live="polite">
-          <p class="text-sm text-neutral-600">{% if has_query %}Tambien revisa estas empresas destacadas por satisfaccion promedio.{% else %}Empresas destacadas por satisfaccion promedio.{% endif %}</p>
+          <p class="text-sm text-neutral-600">{% if has_query %}También revisa estas empresas destacadas por satisfacción promedio.{% else %}Empresas destacadas por satisfacción promedio.{% endif %}</p>
           <div class="grid gap-4 md:grid-cols-3">
             {% for company in top_companies %}
               <article class="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
@@ -68,7 +68,7 @@
                 <p class="mt-2 text-sm text-neutral-700">{{ company.summary_line }}</p>
                 <div class="mt-3 flex items-center justify-between text-xs text-neutral-500">
                   <span class="font-medium text-brand-700">{{ company.avg_rating|floatformat:1 }} / 5</span>
-                  <span>{{ company.review_count }} resenas</span>
+                  <span>{{ company.review_count }} reseñas</span>
                 </div>
                 <a href="{% url 'calificaciones' company.slug %}" class="mt-3 inline-flex items-center gap-2 text-sm font-medium text-brand-700 hover:underline">Ver calificaciones -></a>
               </article>
